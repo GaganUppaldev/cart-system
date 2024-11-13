@@ -10,6 +10,19 @@
   <script>
     alert("welcome sir")
   </script>
+  <script>
+    // Check for stored username and update the Guest div
+    window.onload = function() {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            const guestDiv = document.querySelector('#box div');
+            if (guestDiv) {
+                guestDiv.innerText = storedUsername;
+            }
+        }
+    };
+</script>
+
   <div id="box">
     <div id="box-a" style="cursor:pointer" >Guest</div>
     <div id="box-a" style="cursor: pointer;" onclick="location.href='signup.html'">
