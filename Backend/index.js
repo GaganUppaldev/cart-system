@@ -52,7 +52,7 @@ app.post('/login', async (req, res) => {
 
         if (user) {
             // If user exists, respond with status 420
-            res.status(200).json({ message: 'User exists' });
+            res.status(200).json({ message: 'User exists' , username: name});
         } else {
             
             res.status(401).json({ message: 'User not found or incorrect credentials' });
