@@ -3,48 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Product List</title>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
   <script>
-    alert("welcome sir")
+    alert("Welcome sir");
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-    // Check for stored username and update the Guest div
+    // Fetch and display products on page load
     window.onload = function() {
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            const guestDiv = document.querySelector('#box div');
-            if (guestDiv) {
-                guestDiv.innerText = storedUsername;
-            }
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername) {
+        const guestDiv = document.querySelector('#box div');
+        if (guestDiv) {
+          guestDiv.innerText = storedUsername;
         }
+      }
+
+      axios.get('http://localhost:4000/product-load') // Updated to GET
+    .then(response => {
+        const products = response.data;
+        const productsContainer = document.getElementById('products');
+        productsContainer.innerHTML = ''; // Clear existing content
+
+        products.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product';
+
+            productDiv.innerHTML = `
+             <img src="${product.productImage}" alt="Product Image" class="product-image" style="width: 150px; height: 150px; object-fit: cover;" />
+             <p class="product-name">${product.productName}</p>
+             <pclass="product-price">$${product.productPrice}</p>
+             <p class="product-description">${product.productDetails}</p>
+            <button class="add-to-cart">Add to Cart</button>
+            `;
+
+
+            productsContainer.appendChild(productDiv);
+        });
+    })
+    .catch(error => {
+        console.error('Error loading products:', error);
+        alert('Failed to load products. Please try again later.');
+    });
+
     };
-</script>
+  </script>
 
   <div id="box">
-    <div id="box-a" style="cursor:pointer" >Guest</div>
-    <div id="box-a" style="cursor: pointer;" onclick="location.href='signup.html'">
-      Signup
-    </div>
-    <div id="box-a" style="cursor: pointer;" onclick="location.href='login.html'">
-      Login
-    </div>
-    <div id="box-a" style="cursor: pointer;" onclick="location.href='delete.html'">
-      delete
-    </div>
-    <div id="box-a" class="random-text" style="cursor: pointer;" onclick="location.href='cart.html'">
-      Cart
-    </div>
+    <div id="box-a" style="cursor: pointer;">Guest</div>
+    <div id="box-a" style="cursor: pointer;" onclick="location.href='signup.html'">Signup</div>
+    <div id="box-a" style="cursor: pointer;" onclick="location.href='login.html'">Login</div>
+    <div id="box-a" style="cursor: pointer;" onclick="location.href='delete.html'">Delete</div>
+    <div id="box-a" class="random-text" style="cursor: pointer;" onclick="location.href='cart.html'">Cart</div>
+    <div id="box-a" class="random-text" style="cursor: pointer;" onclick="location.href='seller.html'">Seller</div>
   </div>
 
   <div id="products">
-    <div id="product-a">
-      <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNsb3RoaW5nfGVufDB8fDB8fHww" alt="Product Image" id="product-image" />
-      <p id="product-description">This is a brief description of the product.</p>
-      <button id="add-to-cart">Add to Cart</button>
-    </div>
+    <p>Loading products...</p>
   </div>
 </body>
 </html>
+
