@@ -12,6 +12,11 @@ const port = 4000;
 
 app.use(express.json());
 
+
+// Middleware to serve static files from 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+
+
 // Set up multer for handling file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -47,14 +52,15 @@ app.use(cors({
 // Define the /product-list endpoint
 app.post('/product-list', upload.single('productImage'), async (req, res) => {
     const { productName, productId, productprice, productDetails } = req.body;
-    const productImage = req.file ? req.file.path : null;
+    //to save .jpg file location properly 
+    const productImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
 
     const newProduct = new Product({
-        productImage: productImage,
-        productName: productName,
-        productId: productId,
+        productImage,
+        productName,
+        productId,
         productPrice: parseFloat(productprice),
-        productDetails: productDetails,
+        productDetails,
     });
 
     try {
@@ -65,6 +71,7 @@ app.post('/product-list', upload.single('productImage'), async (req, res) => {
         res.status(500).json({ message: 'Error creating product' });
     }
 });
+
 
 app.get('/', (req, res) => {
     res.send('one two three mic check check check 1');
@@ -102,6 +109,18 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Define the /product-load endpoint
+app.get('/product-load', async (req, res) => {
+    try {
+        const products = await Product.find(); // Fetch all products from the database
+        res.status(200).json(products); // Respond with the product data
+    } catch (error) {
+        console.error('Error loading products:', error);
+        res.status(500).json({ message: 'Error loading products' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}/`);
 });
+
