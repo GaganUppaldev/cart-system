@@ -109,16 +109,86 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Define the /product-load endpoint
 app.get('/product-load', async (req, res) => {
     try {
-        const products = await Product.find(); // Fetch all products from the database
-        res.status(200).json(products); // Respond with the product data
+        const products = await Product.find(); // Fetch all products
+        const modifiedProducts = products.map(product => ({
+            ...product.toObject(),
+            // Ensure productId remains as a number
+        }));
+        res.status(200).json(modifiedProducts); // Return modified product data
     } catch (error) {
         console.error('Error loading products:', error);
         res.status(500).json({ message: 'Error loading products' });
     }
 });
+
+
+app.post('/add-to-cart', async (req, res) => {
+    const { productId } = req.body; // Extract productId as a number
+    const username = req.headers['username']; // Extract username from headers
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username is required' });
+    }
+
+    if (productId === undefined) {
+        return res.status(400).json({ message: 'Product ID is required' });
+    }
+
+    try {
+        // Find the user by username
+        const user = await User.findOne({ name: username });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if the product is already in the cart
+        const isProductInCart = user.cart.some(item => item.productId === productId);
+        if (!isProductInCart) {
+            user.cart.push({ productId }); // Add productId to cart
+            await user.save(); // Save updated user document
+        }
+
+        res.status(200).json({ message: 'Product added to cart successfully', cart: user.cart });
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+        res.status(500).json({ message: 'Failed to add product to cart', error });
+    }
+});
+
+/*
+app.get('/cart-details', async (req, res) => {
+    const username = req.query.username; // Extract username from query params
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username is required' });
+    }
+
+    try {
+        // Find the user by username
+        const user = await User.findOne({ name: username });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Extract productIds from the user's cart
+        const productIds = user.cart.map(item => item.productId);
+
+        // Query the Product collection to get details of the products in the cart
+        const products = await Product.find({ productId: { $in: productIds } });
+
+        res.status(200).json(products); // Return the product details
+    } catch (error) {
+        console.error('Error fetching cart details:', error);
+        res.status(500).json({ message: 'Failed to load cart details' });
+    }
+});*/
+
+
+
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}/`);
