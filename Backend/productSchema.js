@@ -9,9 +9,9 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
     productId: {
-        type: String,
+        type: Number, // Change to Number
         required: true,
-        unique: true,
+        unique: true, // Ensure uniqueness
     },
     productPrice: {
         type: Number,
