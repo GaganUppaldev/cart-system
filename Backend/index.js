@@ -187,10 +187,43 @@ app.get('/cart-details', async (req, res) => {
     }
 });*/
 
+// API 1: Fetch user cart by username
+app.post('/user-cart', async (req, res) => {
+    try {
+      const { username } = req.body; // Get username from the client request
+      const user = await User.findOne({ name: username }); // Find user by username
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' }); // Handle user not found
+      }
+  
+      res.json({ cart: user.cart }); // Respond with user's cart
+    } catch (error) {
+      console.error('Error fetching user cart:', error);
+      res.status(500).json({ message: 'Server error' }); // Handle server error
+    }
+  });
+  
+  // API 2: Fetch product details by product IDs
+  app.post('/product-details', async (req, res) => {
+    try {
+      const { productIds } = req.body; // Get product IDs from the client request
+      const products = await Product.find({ productId: { $in: productIds } }); // Find products by IDs
+  
+      if (!products.length) {
+        return res.status(404).json({ message: 'Products not found' }); // Handle no products found
+      }
+  
+      res.json(products); // Respond with product details
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+      res.status(500).json({ message: 'Server error' }); // Handle server error
+    }
+  });
+
 
 
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}/`);
 });
-
