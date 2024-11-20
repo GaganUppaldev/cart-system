@@ -97,11 +97,11 @@
         <input type="text" id="productName" name="productName" required>
 
         <label for="productId">Unique Product ID:</label>
-        <input type="text" id="productId" name="productId" required>
+        <input type="number" id="productId" name="productId" required>
 
         
-        <label for="product-price">Product Price USD:</label>
-        <input type="number" id="product-list" name="product-list" required>
+        <label for="productprice">Product Price USD:</label>
+        <input type="number" id="productprice" name="productprice" required>
 
         <label for="productDetails">Product Details:</label>
         <textarea id="productDetails" name="productDetails" required></textarea>
@@ -116,6 +116,7 @@
             formData.append('productImage', document.getElementById('productImage').files[0]);
             formData.append('productName', document.getElementById('productName').value);
             formData.append('productId', document.getElementById('productId').value);
+            formData.append('productprice', document.getElementById('productprice').value);
             formData.append('productDetails', document.getElementById('productDetails').value);
 
             axios.post('http://localhost:4000/product-list', formData, {
